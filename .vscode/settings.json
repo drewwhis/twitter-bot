@@ -1,5 +1,7 @@
 {
   "cSpell.words": [
     "tweepy"
-  ]
+  ],
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true
 }
