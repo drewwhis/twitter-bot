@@ -10,8 +10,12 @@ def run_auth():
     auth_path = os.path.join(script_dir, "../auth/credentials.json")
 
     # Load JSON
-    with open(auth_path) as f:
-        data = json.load(f)
+    try:
+        with open(auth_path) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print('File', auth_path, 'does not exist')
+        os.sys.exit()
 
     # Set keys
     consumer_key = data['consumer_key']
@@ -32,8 +36,12 @@ def listen_to_streams(api):
     filter_path = os.path.join(script_dir, "../data/filters.json")
 
     # Load JSON
-    with open(filter_path) as f:
-        data = json.load(f)
+    try:
+        with open(filter_path) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print('File', filter_path, 'does not exist')
+        os.sys.exit()
 
     # Set keys
     user_ids = data["users"]
