@@ -4,7 +4,7 @@ This is a Twitter bot that is capable of retweeting non-retweets and non-replies
 
 ## Requirements
 
-This program requires the tweepy pip package to run.
+To install the requirements from the project directory, run `pip install -r requirements.txt`.
 
 ## User Files
 
