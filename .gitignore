@@ -1,4 +1,4 @@
-auth/**
-data/**
+auth/credentials.json
+data/filters.json
 **/__pycache__/**
 .vscode/.ropeproject/objectdb
