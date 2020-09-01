@@ -39,7 +39,7 @@ def listen_to_streams(api):
     user_ids = data["users"]
 
     # Listen
-    stream_listener = AutoRetweetStreamListener()
+    stream_listener = AutoRetweetStreamListener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
     my_stream.filter(follow=user_ids, is_async=True)
 
