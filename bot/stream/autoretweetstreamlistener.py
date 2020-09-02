@@ -9,6 +9,11 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
         self.user_ids = user_ids
 
     def on_status(self, status):
+        if status.user.id_str not in self.user_ids:
+            # The user is not in the list of users to retweet.
+            logging.info('Ignored tweet from ' + status.user.screen_name)
+            return
+
         if hasattr(status, "retweeted_status"):
             # Do not retweet retweets.
             logging.info('Ignored retweet from ' + status.user.screen_name)
@@ -17,11 +22,6 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
         if status.in_reply_to_status_id is not None:
             # Do not retweet replies
             logging.info('Ignored reply from ' + status.user.screen_name)
-            return
-
-        if status.user.id_str not in self.user_ids:
-            # The user is not in the list of users to retweet.
-            logging.info('Ignored tweet from ' + status.user.screen_name)
             return
 
         try:

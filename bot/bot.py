@@ -57,7 +57,7 @@ def listen_to_streams(api):
 
     try:
         my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-        my_stream.filter(follow=user_ids, is_async=True)
+        my_stream.filter(follow=user_ids, is_async=True, stall_warnings=True)
     except:
         logging.error('Unable to set up stream')
         os.sys.exit()
