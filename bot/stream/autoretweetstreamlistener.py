@@ -28,7 +28,7 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
             self.api.retweet(status.id)
             logging.info('Retweeted: ' + status.text + ' from user ' + status.user.screen_name)
         except tweepy.error.TweepError:
-            print(status.text, status.id)
+            logging.error('Failed to retweet: ' + status.text + ' from user ' + status.user.screen_name)
 
     def on_error(self, status_code):
         if status_code == 420:
