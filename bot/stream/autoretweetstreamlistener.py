@@ -2,9 +2,10 @@ import tweepy
 
 
 class AutoRetweetStreamListener(tweepy.StreamListener):
-    def __init__(self, api):
+    def __init__(self, api, user_ids):
         super().__init__()
         self.api = api
+        self.user_ids = user_ids
 
     def on_status(self, status):
         if hasattr(status, "retweeted_status"):
@@ -13,6 +14,10 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
 
         if status.in_reply_to_status_id is not None:
             # Do not retweet replies
+            return
+
+        if status.user.id not in self.user_ids:
+            # The user is not in the list of users to retweet.
             return
 
         try:
