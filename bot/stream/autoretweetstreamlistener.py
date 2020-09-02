@@ -16,7 +16,7 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
             # Do not retweet replies
             return
 
-        if status.user.id not in self.user_ids:
+        if status.user.id_str not in self.user_ids:
             # The user is not in the list of users to retweet.
             return
 
