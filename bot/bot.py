@@ -1,6 +1,7 @@
 import tweepy
 import json
 import os
+import logging
 from stream.autoretweetstreamlistener import AutoRetweetStreamListener
 
 
@@ -14,7 +15,7 @@ def run_auth():
         with open(auth_path) as f:
             data = json.load(f)
     except FileNotFoundError:
-        print('File', auth_path, 'does not exist')
+        logging.error('File ' + auth_path + ' does not exist')
         os.sys.exit()
 
     # Set keys
@@ -26,8 +27,13 @@ def run_auth():
     # Authorize
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
-    return api
+
+    try:
+        api = tweepy.API(auth)
+        return api
+    except:
+        logging.error('unable to authorize API')
+        os.sys.exit()
 
 
 def listen_to_streams(api):
@@ -40,7 +46,7 @@ def listen_to_streams(api):
         with open(filter_path) as f:
             data = json.load(f)
     except FileNotFoundError:
-        print('File', filter_path, 'does not exist')
+        logging.error('File ' + filter_path + ' does not exist')
         os.sys.exit()
 
     # Set keys
@@ -48,13 +54,21 @@ def listen_to_streams(api):
 
     # Listen
     stream_listener = AutoRetweetStreamListener(api, user_ids)
-    my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-    my_stream.filter(follow=user_ids, is_async=True)
+
+    try:
+        my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
+        my_stream.filter(follow=user_ids, is_async=True)
+    except:
+        logging.error('Unable to set up stream')
+        os.sys.exit()
 
 
 def main():
+    logging.basicConfig(filename='log.txt', format='%(asctime)s %(levelname)s: %(message)s', datefmt='%d-%m-%Y %I:%M:%S %p', level=logging.INFO)
     api = run_auth()
+    logging.info('api authenticated')
     listen_to_streams(api)
+    logging.info('stream started')
 
 
 if __name__ == "__main__":
