@@ -64,7 +64,7 @@ def listen_to_streams(api):
 
 
 def main():
-    log_path = os.path.dirname(__file__) + '../log.txt'
+    log_path = os.path.join(os.path.dirname(__file__), '../log.txt')
     logging.basicConfig(filename=log_path, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%d-%m-%Y %I:%M:%S %p', level=logging.INFO)
     api = run_auth()
     logging.info('api authenticated')
