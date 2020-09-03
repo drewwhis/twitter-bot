@@ -1,5 +1,7 @@
 import tweepy
 import logging
+from queue import Queue
+from threading import Thread
 
 
 class AutoRetweetStreamListener(tweepy.StreamListener):
@@ -7,8 +9,20 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
         super().__init__()
         self.api = api
         self.user_ids = user_ids
+        self.queue = Queue()
 
-    def on_status(self, status):
+        num_worker_threads = 4
+        for _ in range(num_worker_threads):
+            t = Thread(target=self.process_queue)
+            t.daemon = True
+            t.start()
+
+    def process_queue(self):
+        while True:
+            self.process_status(self.queue.get())
+            self.queue.task_done()
+
+    def process_status(self, status):
         if status.user.id_str not in self.user_ids:
             # The user is not in the list of users to retweet.
             logging.info('Ignored tweet from ' + status.user.screen_name)
@@ -26,9 +40,14 @@ class AutoRetweetStreamListener(tweepy.StreamListener):
 
         try:
             self.api.retweet(status.id)
-            logging.info('Retweeted: ' + status.text + ' from user ' + status.user.screen_name)
+            logging.info('Retweeted: ' + status.text +
+                         ' from user ' + status.user.screen_name)
         except tweepy.error.TweepError:
-            logging.error('Failed to retweet: ' + status.text + ' from user ' + status.user.screen_name)
+            logging.error('Failed to retweet: ' + status.text +
+                          ' from user ' + status.user.screen_name)
+
+    def on_status(self, status):
+        self.queue.put(status)
 
     def on_error(self, status_code):
         if status_code == 420:
