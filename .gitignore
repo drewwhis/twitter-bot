@@ -1,5 +1,6 @@
 auth/credentials.json
 data/filters.json
+data/settings.json
 **/__pycache__/**
 .vscode/.ropeproject/objectdb
 log.txt

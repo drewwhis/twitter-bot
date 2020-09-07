@@ -64,13 +64,35 @@ def listen_to_streams(api):
 
 
 def main():
+    # Go to data dir to get settings.
+    script_dir = os.path.dirname(__file__)
+    settings_path = os.path.join(script_dir, "../data/settings.json")
+
+    # Load JSON
+    try:
+        with open(settings_path) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        logging.error('File ' + settings_path + ' does not exist')
+        os.sys.exit()
+
+    log_level_json = data["log_level"]
+    if log_level_json is not None:
+        log_level_string = log_level_json.lower().strip()
+    
+    log_level = logging.ERROR
+    if log_level_string == 'warning':
+        log_level = logging.WARNING
+    elif log_level_string == 'info':
+        log_level = logging.INFO        
+
     log_path = os.path.join(os.path.dirname(__file__), '../log.txt')
     logging.basicConfig(filename=log_path, format='%(asctime)s %(levelname)s: %(message)s',
-                        datefmt='%d-%m-%Y %I:%M:%S %p', level=logging.INFO)
+                        datefmt='%d-%m-%Y %I:%M:%S %p', level=log_level)
     api = run_auth()
-    logging.info('api authenticated')
+    logging.warning('api authenticated')
     listen_to_streams(api)
-    logging.info('stream started')
+    logging.warning('stream started')
 
 
 if __name__ == "__main__":
