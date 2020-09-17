@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from stream.autoretweetstreamlistener import AutoRetweetStreamListener
+from http.client import IncompleteRead
 
 
 def run_auth():
@@ -55,12 +56,17 @@ def listen_to_streams(api):
     # Listen
     stream_listener = AutoRetweetStreamListener(api, user_ids)
 
-    try:
-        my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-        my_stream.filter(follow=user_ids, is_async=True, stall_warnings=True)
-    except:
-        logging.error('Unable to set up stream')
-        os.sys.exit()
+    while True:
+        try:
+            my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
+            my_stream.filter(follow=user_ids)
+        except IncompleteRead:
+            logging.error('Incomplete Read error. Restarting stream...')
+            continue
+        except KeyboardInterrupt:
+            my_stream.disconnect()
+            break
+    os.sys.exit()
 
 
 def main():
