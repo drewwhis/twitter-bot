@@ -4,6 +4,7 @@ import os
 import logging
 from stream.autoretweetstreamlistener import AutoRetweetStreamListener
 from http.client import IncompleteRead
+from urllib3.exceptions import ProtocolError
 
 
 def run_auth():
@@ -59,7 +60,11 @@ def listen_to_streams(api):
     while True:
         try:
             my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
+            logging.warning('stream started/restarted')
             my_stream.filter(follow=user_ids)
+        except ProtocolError:
+            logging.error('Protocol error. Restarting stream...')
+            continue
         except IncompleteRead:
             logging.error('Incomplete Read error. Restarting stream...')
             continue
@@ -98,7 +103,6 @@ def main():
     api = run_auth()
     logging.warning('api authenticated')
     listen_to_streams(api)
-    logging.warning('stream started')
 
 
 if __name__ == "__main__":
