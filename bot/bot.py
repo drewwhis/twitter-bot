@@ -60,17 +60,15 @@ def listen_to_streams(api):
     while True:
         try:
             my_stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-            logging.warning('stream started/restarted')
+            logging.warning('Starting stream...')
             my_stream.filter(follow=user_ids)
-        except ProtocolError:
-            logging.error('Protocol error. Restarting stream...')
-            continue
-        except IncompleteRead:
-            logging.error('Incomplete Read error. Restarting stream...')
-            continue
         except KeyboardInterrupt:
             my_stream.disconnect()
             break
+        except Exception as ex:
+            logging.error(ex)
+            logging.error('Restarting stream...')
+            continue
     os.sys.exit()
 
 
